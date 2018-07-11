@@ -13,5 +13,32 @@ def makeHeap(data) {
     return data
 }
 
+def removeTopItem(data, count) {
+    def result = data[0]
+    data[0] = data[count - 1]
+    def idx = 0
+    while (true) {
+        def child1 = 2 * idx + 1
+        def child2 = 2 * idx + 2
+        if (child1 >= count) child1 = idx
+        if (child2 >= count) child2 = idx
+        if (data[idx] >= data[child1] &&
+                data[idx] >= data[child2]) {
+            break
+        }
+        def swap_child;
+        if (data[child1] > data[child2]) {
+            swap_child = child1
+        } else {
+            swap_child = child2
+        }
+        def temp = data[idx]
+        data[idx] = data[swap_child]
+        data[swap_child] = temp
+        idx = swap_child
+    }
+    return result
+}
+
 def data = [3, 1, 2, 7, 5, 4]
 println(makeHeap(data))
