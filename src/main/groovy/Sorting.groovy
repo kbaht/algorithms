@@ -8,7 +8,6 @@ def insertionSort(data) {
         }
         data[j + 1] = key
     }
-    return data
 }
 
 def selectionSort(data) {
@@ -25,7 +24,6 @@ def selectionSort(data) {
             data[min] = temp
         }
     }
-    return data
 }
 
 def bubbleSort(data) {
@@ -43,8 +41,85 @@ def bubbleSort(data) {
             break
         }
     }
-    return data
 }
 
-def data = [3, 1, 2, 7, 5, 4]
-println(bubbleSort(data))
+def quickSort(data, start, end) {
+    if (start >= end) return
+    def divider = data[start]
+    def lo = start
+    def hi = end
+    for (; ;) {
+        while (data[hi] >= divider) {
+            hi--
+            if (hi <= lo) break
+        }
+        if (hi <= lo) {
+            data[lo] = divider
+            break
+        }
+        data[lo] = data[hi]
+        lo++
+        while (data[lo] < divider) {
+            lo++
+            if (lo >= hi) break
+        }
+        if (lo >= hi) {
+            lo = hi
+            data[hi] = divider
+            break
+        }
+        data[hi] = data[lo]
+    }
+    quickSort(data, start, lo - 1)
+    quickSort(data, lo + 1, end)
+}
+
+def mergeSort(data, scratch, start, end) {
+    if (start == end) return
+    def midpoint = (start + end).intdiv(2)
+    mergeSort(data, scratch, start, midpoint)
+    mergeSort(data, scratch, midpoint + 1, end)
+
+    def leftIdx = start
+    def rightIdx = midpoint + 1
+    def scratchIdx = leftIdx
+
+    while ((leftIdx <= midpoint) && (rightIdx <= end)) {
+        if (data[leftIdx] <= data[rightIdx]) {
+            scratch[scratchIdx] = data[leftIdx]
+            leftIdx++
+        } else {
+            scratch[scratchIdx] = data[rightIdx]
+            rightIdx++
+        }
+        scratchIdx++
+    }
+    for (int idx = leftIdx; idx <= midpoint; idx++) {
+        scratch[scratchIdx] = data[idx]
+        scratchIdx++
+    }
+    for (int idx = rightIdx; idx <= end; idx++) {
+        scratch[scratchIdx] = data[idx]
+        scratchIdx++
+    }
+    for (idx in start..end) {
+        data[idx] = scratch[idx]
+    }
+}
+
+def countingSort(data, int maxValue) {
+    def counts = new int[maxValue + 1]
+
+    for (i in 0..<data.size()) {
+        counts[data[i]]++
+    }
+
+    def idx = 0
+
+    for (i in 0..maxValue) {
+        for (j in 0..<counts[i]) {
+            data[idx] = i
+            idx++
+        }
+    }
+}

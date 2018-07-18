@@ -26,11 +26,9 @@ def removeTopItem(data, count) {
                 data[idx] >= data[child2]) {
             break
         }
-        def swap_child;
+        def swap_child = child2
         if (data[child1] > data[child2]) {
             swap_child = child1
-        } else {
-            swap_child = child2
         }
         def temp = data[idx]
         data[idx] = data[swap_child]
@@ -40,5 +38,14 @@ def removeTopItem(data, count) {
     return result
 }
 
+def heapSort(data) {
+    makeHeap(data)
+    for (i in (data.size() - 1)..<0) {
+        def value = removeTopItem(data, i + 1)
+        data[i] = value
+    }
+    return data
+}
+
 def data = [3, 1, 2, 7, 5, 4]
-println(makeHeap(data))
+println(heapSort(data))
