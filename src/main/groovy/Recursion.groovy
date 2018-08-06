@@ -5,6 +5,7 @@ import java.awt.*
 import java.awt.geom.Line2D
 import java.awt.geom.Point2D
 
+//Кривые Коха
 class KochPanel extends JPanel {
     @Override
     void paint(Graphics g) {
@@ -20,9 +21,9 @@ class KochPanel extends JPanel {
         def pt3 = new Point2D.Double(
                 (float) (x + len * Math.cos(Math.PI / 3)),
                 (float) (y + len * Math.sin(Math.PI / 3)))
-        drawKoch(gp, 5, pt1, 0.0, len)
-        drawKoch(gp, 5, pt2, Math.PI * 2 / 3, len)
-        drawKoch(gp, 5, pt3, -Math.PI * 2 / 3, len)
+        drawKoch(gp, 7, pt1, 0.0, len)
+        drawKoch(gp, 7, pt2, Math.PI * 2 / 3, len)
+        drawKoch(gp, 7, pt3, -Math.PI * 2 / 3, len)
     }
 
     def drawKoch(Graphics2D g, depth, pt1, angle, length) {
@@ -56,10 +57,45 @@ class KochPanel extends JPanel {
     }
 }
 
+//Кривые Гильберта
+class HilbertPanel extends JPanel {
+    float currentX = 0
+    float currentY = 0
+
+    @Override
+    void paint(Graphics g) {
+        super.paint(g)
+        def gp = (Graphics2D) g
+        def margin = 10
+        def depth = 5
+        def dx = ((width - 2 * margin) / (Math.pow(2, depth + 1) - 1))
+        currentX = margin;
+        currentY = margin;
+        hilbert(gp, depth, dx, 0.0)
+    }
+
+    def hilbert(Graphics2D g, depth, dx, dy) {
+        if (depth > 0) hilbert(g, depth - 1, dy, dx)
+        drawRelative(g, dx, dy)
+        if (depth > 0) hilbert(g, depth - 1, dx, dy)
+        drawRelative(g, dy, dx)
+        if (depth > 0) hilbert(g, depth - 1, dx, dy)
+        drawRelative(g, -dx, -dy)
+        if (depth > 0) hilbert(g, depth - 1, -dy, -dx)
+    }
+
+    def drawRelative(Graphics2D g, dx, dy) {
+        def line = new Line2D.Double(currentX, currentY, currentX + dx, currentY + dy)
+        g.draw(line)
+        currentX += dx
+        currentY += dy
+    }
+}
+
 new SwingBuilder().edt {
     frame(title: 'Frame', size: [500, 500], show: true, defaultCloseOperation: JFrame.EXIT_ON_CLOSE) {
         borderLayout()
-        widget(new KochPanel())
+        widget(new HilbertPanel())
     }
 }
 
