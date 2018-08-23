@@ -25,27 +25,43 @@ def relax(WeightedDiGraph graph, vertex, distTo, edgeTo) {
     }
 }
 
-def dijkstra(WeightedDiGraph graph, start) {
-    def edgeTo = []
-    def distTo = [:]
-    def pq = new PriorityQueue()
-    for (vertex in graph.vertices()) {
-        pq.add(Double.POSITIVE_INFINITY)
-    }
-    pq.add(0.0)
-    while (!pq.empty) {
-        relaxDij(graph, pq.remove(), pq, distTo, edgeTo)
+class Item implements Comparable<Item> {
+    def distance
+    def vertex
+
+    @Override
+    int compareTo(Item o) {
+        return Double.compare(distance, o.distance)
     }
 }
 
-def relaxDij(WeightedDiGraph p, vertex, PriorityQueue pq, distTo, edgeTo) {
+def dijkstra(WeightedDiGraph graph, start) {
+    def edgeTo = [:]
+    def distTo = [:]
+    def pq = new PriorityQueue<Item>()
+    for (vertex in graph.vertices()) {
+        distTo[vertex] = Double.POSITIVE_INFINITY
+    }
+    distTo[start] = 0.0
+    pq.add(new Item(vertex: start, distance: 0.0))
+    while (!pq.empty) {
+        relaxDij(graph, pq.remove().vertex, pq, distTo, edgeTo)
+    }
+    return distTo
+}
+
+def relaxDij(WeightedDiGraph graph, vertex, PriorityQueue<Item> pq, distTo, edgeTo) {
     for (WeightedEdge edge in graph.neighbour(vertex)) {
         def to = edge.to
         if (distTo[to] > distTo[vertex] + edge.weight) {
             distTo[to] = distTo[vertex] + edge.weight
             edgeTo[to] = edge
-            if (pq.contains(to)) {
-                pq.
+            def item = pq.find { it.vertex == to }
+            if (item != null) {
+                pq.remove(item)
+                pq.add(new Item(vertex: to, distance: distTo[to]))
+            } else {
+                pq.add(new Item(vertex: to, distance: distTo[to]))
             }
         }
     }
@@ -66,5 +82,6 @@ g.addEdge(new WeightedEdge(3, 6, 0.52))
 g.addEdge(new WeightedEdge(6, 0, 0.58))
 g.addEdge(new WeightedEdge(6, 4, 0.93))
 g.addEdge(new WeightedEdge(2, 2, 0.00))
-println(asyclicSp(g, 5, 2))
+println(asyclicSp(g, 5))
 
+println(dijkstra(g, 5))
